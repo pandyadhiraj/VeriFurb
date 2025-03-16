@@ -1,0 +1,12 @@
+console.log(events);
+const events = await contract.queryFilter("ProductRegistered");
+const contract = await ethers.getContractAt("ProductLifecycle", "0x03765A2F9E1F6Fe67f71834EB71571046c60b257");
+await contract.getProduct(1);
+await contract.registerProduct("Laptop");
+const contract = await ethers.getContractAt("ProductLifecycle", "0x1Ad0f75D1D69053eaD340BfFc32223f797A24096");
+await contract.getProduct(1);
+const contract = await ethers.getContractAt("ProductLifecycle", "0x2DAadBe288e0fBE5f45f3AA492258ecDa801cE11");
+await contract.getProduct(1);
+await contract.registerProduct("Laptop");
+await contract.getProduct(1);
+const contract = await ethers.getContractAt("ProductLifecycle", "0x2DAadBe288e0fBE5f45f3AA492258ecDa801cE11");

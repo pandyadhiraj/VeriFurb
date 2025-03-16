@@ -1,0 +1,48 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+contract ProductLifecycle {
+    struct Product {
+        uint id;
+        string name;
+        string category;
+        string manufacturer;
+        uint manufactureYear;
+        string serialNumber;
+        address owner;
+        bool isRefurbished;
+        string certificateHash;
+    }
+
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    event ProductRegistered(uint id, string name, string category, string manufacturer);
+    event ProductRefurbished(uint id, string certificateHash);
+
+    function registerProduct(
+        string memory _name, 
+        string memory _category, 
+        string memory _manufacturer, 
+        uint _manufactureYear, 
+        string memory _serialNumber
+    ) public {
+        productCount++;
+        products[productCount] = Product(
+            productCount, _name, _category, _manufacturer, 
+            _manufactureYear, _serialNumber, msg.sender, false, ""
+        );
+        emit ProductRegistered(productCount, _name, _category, _manufacturer);
+    }
+
+    function getProduct(uint _id) public view returns (Product memory) {
+        return products[_id];
+    }
+
+    function refurbishProduct(uint _id, string memory _certificateHash) public {
+        require(products[_id].owner == msg.sender, "Only the owner can refurbish.");
+        products[_id].isRefurbished = true;
+        products[_id].certificateHash = _certificateHash;
+        emit ProductRefurbished(_id, _certificateHash);
+    }
+}
