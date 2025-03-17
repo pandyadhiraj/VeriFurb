@@ -147,7 +147,7 @@ const ProductDetails = ({ signer }) => {
                     {event.warrantyExtension} months
                   </p>
                   <p>
-                    <strong>Refurbishment Cost:</strong> $
+                    <strong>Refurbishment Cost:</strong> ₹
                     {event.refurbishmentCost}
                   </p>
                   <p>
