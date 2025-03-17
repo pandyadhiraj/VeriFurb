@@ -4,7 +4,7 @@ import WalletConnect from "../components/WalletConnect";
 const Home = ({ walletAddress, setWalletAddress, signer, setSigner }) => {
   return (
     <div className="text-center p-6">
-      <h1 className="text-3xl font-bold mb-6">Welcome to RefurbSys</h1>
+      <h1 className="text-3xl font-bold mb-6">Welcome to VeriFurb</h1>
       {!walletAddress ? (
         <WalletConnect
           setWalletAddress={setWalletAddress}
