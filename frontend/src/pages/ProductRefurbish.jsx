@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import contractABI from "../../ProductLifecycle.json";
+import contractABI from "../../../blockchain/artifacts/contracts/ProductLifecycle.sol/ProductLifecycle.json";
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
 
@@ -14,12 +14,22 @@ const ProductRefurbish = ({ signer }) => {
     warrantyExtension: "",
     refurbishmentCost: "",
     newSerialNumber: "",
+    softwareUpdateVersion: "",
+    batteryReplaced: false,
+    screenReplaced: false,
+    motherboardReplaced: false,
+    refurbishmentGrade: "",
+    physicalCondition: "",
   });
 
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
   };
 
   const refurbishProduct = async () => {
@@ -35,15 +45,26 @@ const ProductRefurbish = ({ signer }) => {
         contractABI.abi,
         signer
       );
-      const tx = await contract.refurbishProduct(
+      const tx = await contract.refurbishSmartphone(
         parseInt(formData.productId),
-        formData.details,
-        formData.replacedComponents.split(","),
-        formData.technicianName,
-        formData.certificateHash,
-        parseInt(formData.warrantyExtension),
-        parseInt(formData.refurbishmentCost),
-        formData.newSerialNumber
+        {
+          timestamp: Math.floor(Date.now() / 1000),
+          details: formData.details,
+          replacedComponents: formData.replacedComponents
+            .split(",")
+            .map((item) => item.trim()),
+          technicianName: formData.technicianName,
+          certificateHash: formData.certificateHash,
+          warrantyExtension: parseInt(formData.warrantyExtension),
+          refurbishmentCost: parseInt(formData.refurbishmentCost),
+          newSerialNumber: formData.newSerialNumber,
+          softwareUpdateVersion: formData.softwareUpdateVersion,
+          batteryReplaced: formData.batteryReplaced,
+          screenReplaced: formData.screenReplaced,
+          motherboardReplaced: formData.motherboardReplaced,
+          refurbishmentGrade: formData.refurbishmentGrade,
+          physicalCondition: formData.physicalCondition,
+        }
       );
       await tx.wait();
       alert(`Product ${formData.productId} refurbished successfully!`);
@@ -57,19 +78,127 @@ const ProductRefurbish = ({ signer }) => {
     <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto animate-fadeIn space-y-4">
       <h2 className="text-2xl font-bold text-gray-800">Refurbish Product</h2>
 
-      {Object.keys(formData).map((key) => (
-        <input
-          key={key}
-          type="text"
-          name={key}
-          placeholder={key
-            .replace(/([A-Z])/g, " $1")
-            .replace(/^./, (str) => str.toUpperCase())}
-          value={formData[key]}
-          onChange={handleChange}
-          className="border border-gray-400 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all w-full"
-        />
-      ))}
+      <input
+        type="text"
+        name="productId"
+        placeholder="Product ID"
+        value={formData.productId}
+        onChange={handleChange}
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
+      />
+      <input
+        type="text"
+        name="details"
+        placeholder="Details"
+        value={formData.details}
+        onChange={handleChange}
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
+      />
+      <input
+        type="text"
+        name="replacedComponents"
+        placeholder="Replaced Components (comma-separated)"
+        value={formData.replacedComponents}
+        onChange={handleChange}
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
+      />
+      <input
+        type="text"
+        name="technicianName"
+        placeholder="Technician Name"
+        value={formData.technicianName}
+        onChange={handleChange}
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
+      />
+      <input
+        type="text"
+        name="certificateHash"
+        placeholder="Certificate Hash"
+        value={formData.certificateHash}
+        onChange={handleChange}
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
+      />
+      <input
+        type="number"
+        name="warrantyExtension"
+        placeholder="Warranty Extension (months)"
+        value={formData.warrantyExtension}
+        onChange={handleChange}
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
+      />
+      <input
+        type="number"
+        name="refurbishmentCost"
+        placeholder="Refurbishment Cost ($)"
+        value={formData.refurbishmentCost}
+        onChange={handleChange}
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
+      />
+      <input
+        type="text"
+        name="newSerialNumber"
+        placeholder="New Serial Number"
+        value={formData.newSerialNumber}
+        onChange={handleChange}
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
+      />
+      <input
+        type="text"
+        name="softwareUpdateVersion"
+        placeholder="Software Update Version"
+        value={formData.softwareUpdateVersion}
+        onChange={handleChange}
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
+      />
+      <input
+        type="text"
+        name="refurbishmentGrade"
+        placeholder="Refurbishment Grade"
+        value={formData.refurbishmentGrade}
+        onChange={handleChange}
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
+      />
+      <input
+        type="text"
+        name="physicalCondition"
+        placeholder="Physical Condition"
+        value={formData.physicalCondition}
+        onChange={handleChange}
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
+      />
+
+      <div className="flex items-center space-x-4">
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            name="batteryReplaced"
+            checked={formData.batteryReplaced}
+            onChange={handleChange}
+            className="mr-2"
+          />
+          Battery Replaced
+        </label>
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            name="screenReplaced"
+            checked={formData.screenReplaced}
+            onChange={handleChange}
+            className="mr-2"
+          />
+          Screen Replaced
+        </label>
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            name="motherboardReplaced"
+            checked={formData.motherboardReplaced}
+            onChange={handleChange}
+            className="mr-2"
+          />
+          Motherboard Replaced
+        </label>
+      </div>
 
       <button
         onClick={refurbishProduct}
