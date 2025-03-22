@@ -100,7 +100,7 @@ contract ProductLifecycle {
         emit SmartphoneStatusUpdated(_id);
     }
 
-    // ✅ Store a refurbishment record using a struct
+    // ✅ Store a refurbishment record and mark as refurbished
     function refurbishSmartphone(
         uint256 _id,
         Refurbishment memory _refurbishment
@@ -109,14 +109,20 @@ contract ProductLifecycle {
 
         refurbishments[_id].push(_refurbishment);
 
+        // 🔥 Auto-mark as refurbished
+        Smartphone storage phone = smartphones[_id];
+        phone.isRefurbished = true;
+
         emit SmartphoneRefurbished(_id, _refurbishment.technicianName);
+        emit SmartphoneMarkedAsRefurbished(_id);
     }
 
-    // ✅ Mark a smartphone as refurbished
+    // ✅ Mark a smartphone as refurbished (manual)
     function markAsRefurbished(uint256 _id) public {
         require(_id > 0 && _id <= smartphoneCount, "Invalid smartphone ID");
 
-        smartphones[_id].isRefurbished = true;
+        Smartphone storage phone = smartphones[_id];
+        phone.isRefurbished = true;
 
         emit SmartphoneMarkedAsRefurbished(_id);
     }

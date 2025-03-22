@@ -9,8 +9,8 @@ app.use(express.json());
 
 const contractABI =
   require("../blockchain/artifacts/contracts/ProductLifecycle.sol/ProductLifecycle.json").abi;
-const contractAddress = process.env.CONTRACT_ADDRESS; // Load contract address from .env
-const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545"); // Local Ethereum RPC
+const contractAddress = process.env.CONTRACT_ADDRESS;
+const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
@@ -44,6 +44,7 @@ app.post("/smartphones", async (req, res) => {
 
     res.json({ success: true, message: "Smartphone registered successfully!" });
   } catch (error) {
+    console.error("Error registering smartphone:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -53,7 +54,7 @@ app.get("/smartphones/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const [smartphone, status] = await contract.getSmartphone(id);
-    if (smartphone.id == 0) {
+    if (smartphone.id.toString() === "0") {
       return res.status(404).json({ error: "Smartphone not found" });
     }
 
@@ -143,7 +144,7 @@ app.post("/smartphones/status", async (req, res) => {
   }
 });
 
-// ✅ Refurbish a smartphone (🔴 FIXED STRUCT PASSING)
+// ✅ Refurbish a smartphone (Corrected struct passing)
 app.post("/smartphones/refurbish", async (req, res) => {
   try {
     const {
@@ -169,9 +170,9 @@ app.post("/smartphones/refurbish", async (req, res) => {
         .json({ error: "replacedComponents must be an array" });
     }
 
-    // 🔥 Call refurbishSmartphone first
-    const tx1 = await contract.refurbishSmartphone(id, [
-      Math.floor(Date.now() / 1000), // Timestamp
+    // ✅ Call refurbishSmartphone with structured object
+    const tx = await contract.refurbishSmartphone(id, {
+      timestamp: Math.floor(Date.now() / 1000),
       details,
       technicianName,
       certificateHash,
@@ -185,12 +186,8 @@ app.post("/smartphones/refurbish", async (req, res) => {
       refurbishmentGrade,
       physicalCondition,
       replacedComponents,
-    ]);
-    await tx1.wait();
-
-    // 🔥 THEN call markAsRefurbished
-    const tx2 = await contract.markAsRefurbished(id);
-    await tx2.wait();
+    });
+    await tx.wait();
 
     res.json({
       success: true,
@@ -202,7 +199,7 @@ app.post("/smartphones/refurbish", async (req, res) => {
   }
 });
 
-// ✅ Mark smartphone as refurbished
+// ✅ Mark smartphone as refurbished (no need for this in most cases)
 app.post("/smartphones/mark-refurbished", async (req, res) => {
   try {
     const { id } = req.body;
