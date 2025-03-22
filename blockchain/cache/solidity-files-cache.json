@@ -38,8 +38,8 @@
       ]
     },
     "D:\\RefurSys\\blockchain\\contracts\\ProductLifecycle.sol": {
-      "lastModificationDate": 1742096443814,
-      "contentHash": "537d2d0e68ad576784def8ec43d69603",
+      "lastModificationDate": 1742653572281,
+      "contentHash": "c5f709928e246131d6a30107ea8f1ccb",
       "sourceName": "contracts/ProductLifecycle.sol",
       "solcConfig": {
         "version": "0.8.28",
