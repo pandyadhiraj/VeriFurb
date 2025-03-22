@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import contractABI from "../../ProductLifecycle.json";
+import contractABI from "../../../blockchain/artifacts/contracts/ProductLifecycle.sol/ProductLifecycle.json";
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
 
@@ -22,7 +22,7 @@ const ProductDetails = ({ signer }) => {
         contractABI.abi,
         signer
       );
-      const productData = await contract.getProduct(productId);
+      const productData = await contract.getSmartphone(productId);
 
       if (!productData || productData.id.toString() === "0") {
         setProduct(null);
@@ -33,13 +33,18 @@ const ProductDetails = ({ signer }) => {
       setProduct({
         id: productData.id.toString(),
         name: productData.name,
-        category: productData.category,
         manufacturer: productData.manufacturer,
         manufactureYear: productData.manufactureYear.toString(),
         serialNumber: productData.serialNumber,
         warrantyPeriod: productData.warrantyPeriod.toString(),
-        condition: productData.condition,
-        locationOfRegistration: productData.locationOfRegistration,
+        batteryHealth: productData.batteryHealth,
+        screenCondition: productData.screenCondition,
+        storageCapacity: productData.storageCapacity.toString(),
+        ramSize: productData.ramSize.toString(),
+        networkStatus: productData.networkStatus,
+        activationStatus: productData.activationStatus,
+        blacklistStatus: productData.blacklistStatus,
+        physicalCondition: productData.physicalCondition,
         isRefurbished: productData.isRefurbished,
         refurbishments: productData.refurbishments.map((refurb) => ({
           timestamp: refurb.timestamp.toString(),
@@ -50,6 +55,12 @@ const ProductDetails = ({ signer }) => {
           warrantyExtension: refurb.warrantyExtension.toString(),
           refurbishmentCost: refurb.refurbishmentCost.toString(),
           newSerialNumber: refurb.newSerialNumber || "N/A",
+          softwareUpdateVersion: refurb.softwareUpdateVersion,
+          batteryReplaced: refurb.batteryReplaced ? "Yes" : "No",
+          screenReplaced: refurb.screenReplaced ? "Yes" : "No",
+          motherboardReplaced: refurb.motherboardReplaced ? "Yes" : "No",
+          refurbishmentGrade: refurb.refurbishmentGrade,
+          updatedPhysicalCondition: refurb.updatedPhysicalCondition,
         })),
       });
     } catch (error) {
@@ -93,9 +104,6 @@ const ProductDetails = ({ signer }) => {
             <strong>Name:</strong> {product.name}
           </p>
           <p>
-            <strong>Category:</strong> {product.category}
-          </p>
-          <p>
             <strong>Manufacturer:</strong> {product.manufacturer}
           </p>
           <p>
@@ -108,10 +116,28 @@ const ProductDetails = ({ signer }) => {
             <strong>Warranty Period:</strong> {product.warrantyPeriod} months
           </p>
           <p>
-            <strong>Condition:</strong> {product.condition}
+            <strong>Battery Health:</strong> {product.batteryHealth}%
           </p>
           <p>
-            <strong>Location:</strong> {product.locationOfRegistration}
+            <strong>Screen Condition:</strong> {product.screenCondition}
+          </p>
+          <p>
+            <strong>Storage:</strong> {product.storageCapacity} GB
+          </p>
+          <p>
+            <strong>RAM:</strong> {product.ramSize} GB
+          </p>
+          <p>
+            <strong>Network Status:</strong> {product.networkStatus}
+          </p>
+          <p>
+            <strong>Activation Status:</strong> {product.activationStatus}
+          </p>
+          <p>
+            <strong>Blacklist Status:</strong> {product.blacklistStatus}
+          </p>
+          <p>
+            <strong>Physical Condition:</strong> {product.physicalCondition}
           </p>
           <p>
             <strong>Refurbished:</strong> {product.isRefurbished ? "Yes" : "No"}
@@ -152,6 +178,28 @@ const ProductDetails = ({ signer }) => {
                   </p>
                   <p>
                     <strong>New Serial Number:</strong> {event.newSerialNumber}
+                  </p>
+                  <p>
+                    <strong>Software Update Version:</strong>{" "}
+                    {event.softwareUpdateVersion}
+                  </p>
+                  <p>
+                    <strong>Battery Replaced:</strong> {event.batteryReplaced}
+                  </p>
+                  <p>
+                    <strong>Screen Replaced:</strong> {event.screenReplaced}
+                  </p>
+                  <p>
+                    <strong>Motherboard Replaced:</strong>{" "}
+                    {event.motherboardReplaced}
+                  </p>
+                  <p>
+                    <strong>Refurbishment Grade:</strong>{" "}
+                    {event.refurbishmentGrade}
+                  </p>
+                  <p>
+                    <strong>Updated Physical Condition:</strong>{" "}
+                    {event.updatedPhysicalCondition}
                   </p>
                 </div>
               ))}
