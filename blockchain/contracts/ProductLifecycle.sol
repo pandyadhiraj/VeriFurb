@@ -2,17 +2,6 @@
 pragma solidity ^0.8.19;
 
 contract ProductLifecycle {
-    struct Refurbishment {
-        uint256 timestamp;
-        string details;
-        string[] replacedComponents;
-        string technicianName;
-        string certificateHash;
-        uint256 warrantyExtension;
-        uint256 refurbishmentCost;
-        string newSerialNumber;
-    }
-
     struct Smartphone {
         uint256 id;
         string brand;
@@ -27,15 +16,46 @@ contract ProductLifecycle {
         bool isRefurbished;
     }
 
+    struct SmartphoneStatus {
+        string batteryHealth;
+        string screenCondition;
+        string storageCapacity;
+        string ramSize;
+        string networkStatus;
+        string activationStatus;
+        bool blacklistStatus;
+        string physicalCondition;
+    }
+
+    struct Refurbishment {
+        uint256 timestamp;
+        string details;
+        string technicianName;
+        string certificateHash;
+        uint256 warrantyExtension;
+        uint256 refurbishmentCost;
+        string newSerialNumber;
+        string softwareUpdateVersion;
+        bool batteryReplaced;
+        bool screenReplaced;
+        bool motherboardReplaced;
+        string refurbishmentGrade;
+        string physicalCondition;
+        string[] replacedComponents;
+    }
+
     mapping(uint256 => Smartphone) public smartphones;
-    mapping(uint256 => Refurbishment[]) public refurbishments; // ✅ Separate mapping for refurbishments
+    mapping(uint256 => SmartphoneStatus) public smartphoneStatus;
+    mapping(uint256 => Refurbishment[]) private refurbishments;
     mapping(string => bool) private imeiRegistered;
     uint256 public smartphoneCount;
 
     event SmartphoneRegistered(uint256 indexed id, string imeiNumber);
+    event SmartphoneStatusUpdated(uint256 indexed id);
     event SmartphoneRefurbished(uint256 indexed id, string technicianName);
+    event SmartphoneMarkedAsRefurbished(uint256 indexed id);
 
-    // ✅ Register a new smartphone
+    // ✅ Register smartphone core details
     function registerSmartphone(
         string memory _brand,
         string memory _model,
@@ -50,58 +70,61 @@ contract ProductLifecycle {
         require(!imeiRegistered[_imeiNumber], "IMEI already registered");
 
         smartphoneCount++;
-        smartphones[smartphoneCount] = Smartphone(
-            smartphoneCount,
-            _brand,
-            _model,
-            _osVersion,
-            _imeiNumber,
-            _manufactureDate,
-            _serialNumber,
-            _warrantyPeriod,
-            _condition,
-            _locationOfRegistration,
-            false
-        );
+        smartphones[smartphoneCount] = Smartphone({
+            id: smartphoneCount,
+            brand: _brand,
+            model: _model,
+            osVersion: _osVersion,
+            imeiNumber: _imeiNumber,
+            manufactureDate: _manufactureDate,
+            serialNumber: _serialNumber,
+            warrantyPeriod: _warrantyPeriod,
+            condition: _condition,
+            locationOfRegistration: _locationOfRegistration,
+            isRefurbished: false
+        });
 
         imeiRegistered[_imeiNumber] = true;
         emit SmartphoneRegistered(smartphoneCount, _imeiNumber);
     }
 
-    // ✅ Refurbish a smartphone
-    function refurbishSmartphone(
+    // ✅ Set smartphone status fields separately
+    function setSmartphoneStatus(
         uint256 _id,
-        string memory _details,
-        string[] memory _replacedComponents,
-        string memory _technicianName,
-        string memory _certificateHash,
-        uint256 _warrantyExtension,
-        uint256 _refurbishmentCost,
-        string memory _newSerialNumber
+        SmartphoneStatus memory _status
     ) public {
         require(_id > 0 && _id <= smartphoneCount, "Invalid smartphone ID");
 
-        smartphones[_id].isRefurbished = true;
-        refurbishments[_id].push(
-            Refurbishment(
-                block.timestamp,
-                _details,
-                _replacedComponents,
-                _technicianName,
-                _certificateHash,
-                _warrantyExtension,
-                _refurbishmentCost,
-                _newSerialNumber
-            )
-        );
+        smartphoneStatus[_id] = _status;
 
-        emit SmartphoneRefurbished(_id, _technicianName);
+        emit SmartphoneStatusUpdated(_id);
+    }
+
+    // ✅ Store a refurbishment record using a struct
+    function refurbishSmartphone(
+        uint256 _id,
+        Refurbishment memory _refurbishment
+    ) public {
+        require(_id > 0 && _id <= smartphoneCount, "Invalid smartphone ID");
+
+        refurbishments[_id].push(_refurbishment);
+
+        emit SmartphoneRefurbished(_id, _refurbishment.technicianName);
+    }
+
+    // ✅ Mark a smartphone as refurbished
+    function markAsRefurbished(uint256 _id) public {
+        require(_id > 0 && _id <= smartphoneCount, "Invalid smartphone ID");
+
+        smartphones[_id].isRefurbished = true;
+
+        emit SmartphoneMarkedAsRefurbished(_id);
     }
 
     // ✅ Get smartphone details
-    function getSmartphone(uint256 _id) public view returns (Smartphone memory) {
+    function getSmartphone(uint256 _id) public view returns (Smartphone memory, SmartphoneStatus memory) {
         require(_id > 0 && _id <= smartphoneCount, "Smartphone not found");
-        return smartphones[_id];
+        return (smartphones[_id], smartphoneStatus[_id]);
     }
 
     // ✅ Get refurbishments separately

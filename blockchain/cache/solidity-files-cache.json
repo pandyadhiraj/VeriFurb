@@ -38,8 +38,8 @@
       ]
     },
     "/home/user/RefurSys/blockchain/contracts/ProductLifecycle.sol": {
-      "lastModificationDate": 1742666718801,
-      "contentHash": "a4c64c2dcd9993b323693abbc6f1cce6",
+      "lastModificationDate": 1742668830732,
+      "contentHash": "7d29ea7eac5b0ef67f7f14df4af754d6",
       "sourceName": "contracts/ProductLifecycle.sol",
       "solcConfig": {
         "version": "0.8.28",

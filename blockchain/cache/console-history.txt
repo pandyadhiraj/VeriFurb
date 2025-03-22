@@ -1,3 +1,11 @@
+console.log(phone);
+let phone = await contract.getSmartphone(1);
+);
+    "SN123456", 24, "New", "USA"
+    "Apple", "iPhone 13", "iOS 16", "123456789012345", "2023-01-10",
+await contract.registerSmartphone(
+const contract = await ethers.getContractAt("ProductLifecycle", "0x3ea734d611B27A407967219eb4AEbAabD7d70B7c");
+const [owner] = await ethers.getSigners();
 .
 exit.
 exit
