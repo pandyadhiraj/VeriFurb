@@ -1,18 +1,19 @@
 const hre = require("hardhat");
 
 async function main() {
-    const ProductLifecycle = await hre.ethers.getContractFactory("ProductLifecycle");
+  const ProductLifecycle = await hre.ethers.getContractFactory(
+    "ProductLifecycle"
+  );
+  const productLifecycle = await ProductLifecycle.deploy(); // Deploy contract
 
-    // Deploy the contract
-    const contract = await ProductLifecycle.deploy();  // Fix here: Awaiting deployment
+  await productLifecycle.waitForDeployment(); // Wait for deployment
 
-    // Wait until the contract is actually deployed
-    await contract.waitForDeployment();  // Fix here: Use waitForDeployment() instead of deployed()
-
-    console.log(`Contract deployed at: ${await contract.getAddress()}`);  // Fix: getAddress()
+  console.log(
+    `ProductLifecycle deployed to: ${await productLifecycle.getAddress()}`
+  );
 }
 
 main().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
+  console.error(error);
+  process.exitCode = 1;
 });

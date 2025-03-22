@@ -3,90 +3,110 @@ pragma solidity ^0.8.19;
 
 contract ProductLifecycle {
     struct Refurbishment {
-        uint timestamp;
+        uint256 timestamp;
         string details;
         string[] replacedComponents;
         string technicianName;
         string certificateHash;
-        uint warrantyExtension;
-        uint refurbishmentCost;
+        uint256 warrantyExtension;
+        uint256 refurbishmentCost;
         string newSerialNumber;
     }
 
-    struct Product {
-        uint id;
-        string name;
-        string category;
-        string manufacturer;
-        uint manufactureYear;
+    struct Smartphone {
+        uint256 id;
+        string brand;
+        string model;
+        string osVersion;
+        string imeiNumber;
+        string manufactureDate;
         string serialNumber;
-        uint warrantyPeriod;
+        uint256 warrantyPeriod;
         string condition;
         string locationOfRegistration;
         bool isRefurbished;
-        Refurbishment[] refurbishments;
     }
 
-    mapping(uint => Product) public products;
-    uint public productCount;
+    mapping(uint256 => Smartphone) public smartphones;
+    mapping(uint256 => Refurbishment[]) public refurbishments; // ✅ Separate mapping for refurbishments
+    mapping(string => bool) private imeiRegistered;
+    uint256 public smartphoneCount;
 
-    // ✅ Events now have `indexed` parameters for filtering in React
-    event ProductRegistered(uint indexed id, string name, string category, string manufacturer);
-    event ProductRefurbished(uint indexed id, string technicianName, string certificateHash, uint timestamp);
+    event SmartphoneRegistered(uint256 indexed id, string imeiNumber);
+    event SmartphoneRefurbished(uint256 indexed id, string technicianName);
 
-    function registerProduct(
-        string memory _name, 
-        string memory _category, 
-        string memory _manufacturer, 
-        uint _manufactureYear, 
-        string memory _serialNumber, 
-        uint _warrantyPeriod, 
-        string memory _condition, 
+    // ✅ Register a new smartphone
+    function registerSmartphone(
+        string memory _brand,
+        string memory _model,
+        string memory _osVersion,
+        string memory _imeiNumber,
+        string memory _manufactureDate,
+        string memory _serialNumber,
+        uint256 _warrantyPeriod,
+        string memory _condition,
         string memory _locationOfRegistration
     ) public {
-        productCount++;
+        require(!imeiRegistered[_imeiNumber], "IMEI already registered");
 
-        Product storage newProduct = products[productCount];
-        newProduct.id = productCount;
-        newProduct.name = _name;
-        newProduct.category = _category;
-        newProduct.manufacturer = _manufacturer;
-        newProduct.manufactureYear = _manufactureYear;
-        newProduct.serialNumber = _serialNumber;
-        newProduct.warrantyPeriod = _warrantyPeriod;
-        newProduct.condition = _condition;
-        newProduct.locationOfRegistration = _locationOfRegistration;
-        newProduct.isRefurbished = false;
+        smartphoneCount++;
+        smartphones[smartphoneCount] = Smartphone(
+            smartphoneCount,
+            _brand,
+            _model,
+            _osVersion,
+            _imeiNumber,
+            _manufactureDate,
+            _serialNumber,
+            _warrantyPeriod,
+            _condition,
+            _locationOfRegistration,
+            false
+        );
 
-        // ✅ Emit event with `indexed` product ID
-        emit ProductRegistered(productCount, _name, _category, _manufacturer);
+        imeiRegistered[_imeiNumber] = true;
+        emit SmartphoneRegistered(smartphoneCount, _imeiNumber);
     }
 
-    function refurbishProduct(
-        uint _id, 
-        string memory _details, 
-        string[] memory _replacedComponents, 
-        string memory _technicianName, 
-        string memory _certificateHash, 
-        uint _warrantyExtension, 
-        uint _refurbishmentCost, 
+    // ✅ Refurbish a smartphone
+    function refurbishSmartphone(
+        uint256 _id,
+        string memory _details,
+        string[] memory _replacedComponents,
+        string memory _technicianName,
+        string memory _certificateHash,
+        uint256 _warrantyExtension,
+        uint256 _refurbishmentCost,
         string memory _newSerialNumber
     ) public {
-        require(_id > 0 && _id <= productCount, "Invalid product ID");
+        require(_id > 0 && _id <= smartphoneCount, "Invalid smartphone ID");
 
-        products[_id].isRefurbished = true;
-        products[_id].refurbishments.push(Refurbishment(
-            block.timestamp, _details, _replacedComponents, 
-            _technicianName, _certificateHash, _warrantyExtension, 
-            _refurbishmentCost, _newSerialNumber
-        ));
+        smartphones[_id].isRefurbished = true;
+        refurbishments[_id].push(
+            Refurbishment(
+                block.timestamp,
+                _details,
+                _replacedComponents,
+                _technicianName,
+                _certificateHash,
+                _warrantyExtension,
+                _refurbishmentCost,
+                _newSerialNumber
+            )
+        );
 
-        // ✅ Emit event with `indexed` product ID
-        emit ProductRefurbished(_id, _technicianName, _certificateHash, block.timestamp);
+        emit SmartphoneRefurbished(_id, _technicianName);
     }
 
-    function getProduct(uint _id) public view returns (Product memory) {
-        require(_id > 0 && _id <= productCount, "Invalid product ID");
-        return products[_id];
+    // ✅ Get smartphone details
+    function getSmartphone(uint256 _id) public view returns (Smartphone memory) {
+        require(_id > 0 && _id <= smartphoneCount, "Smartphone not found");
+        return smartphones[_id];
+    }
+
+    // ✅ Get refurbishments separately
+    function getRefurbishments(uint256 _id) public view returns (Refurbishment[] memory) {
+        require(_id > 0 && _id <= smartphoneCount, "Smartphone not found");
+        return refurbishments[_id];
     }
 }
