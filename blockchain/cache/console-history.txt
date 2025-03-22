@@ -1,3 +1,16 @@
+console.log("isRefurbished:", sphone.isRefurbished);
+let sphone = await contract.getSmartphone(5);
+const phone = await contract.getSmartphone(5);
+console.log("isRefurbished:", phone.isRefurbished);
+console.log("isRefurbished:", phone.isRefurbished); // Should be true
+const phone = await contract.getSmartphone(1);
+await contract.markAsRefurbished(1);
+const contract = await ProductLifecycle.attach("0xBE18b7832B5D8C69845A040C827DDbC2941a3F41");
+const ProductLifecycle = await ethers.getContractFactory("ProductLifecycle");
+console.log(product);
+const product = await contract.getProduct(1);
+const contract = await ProductLifecycle.attach("0xBE18b7832B5D8C69845A040C827DDbC2941a3F41");
+const ProductLifecycle = await ethers.getContractFactory("ProductLifecycle");
 console.log(phone);
 let phone = await contract.getSmartphone(1);
 );

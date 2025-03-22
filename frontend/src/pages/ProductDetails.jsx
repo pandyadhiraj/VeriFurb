@@ -1,68 +1,24 @@
 import React, { useState } from "react";
-import { ethers } from "ethers";
-import contractABI from "../../../blockchain/artifacts/contracts/ProductLifecycle.sol/ProductLifecycle.json";
 
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
-
-const ProductDetails = ({ signer }) => {
+const ProductDetails = () => {
   const [productId, setProductId] = useState("");
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const fetchProduct = async () => {
-    if (!signer) {
-      alert("Connect MetaMask first!");
-      return;
-    }
-
     setLoading(true);
     try {
-      const contract = new ethers.Contract(
-        CONTRACT_ADDRESS,
-        contractABI.abi,
-        signer
+      const response = await fetch(
+        `http://localhost:5000/smartphones/${productId}`
       );
-      const productData = await contract.getSmartphone(productId);
-
-      if (!productData || productData.id.toString() === "0") {
-        setProduct(null);
-        setLoading(false);
-        return;
+      if (!response.ok) {
+        throw new Error("Product not found");
       }
 
-      setProduct({
-        id: productData.id.toString(),
-        name: productData.name,
-        manufacturer: productData.manufacturer,
-        manufactureYear: productData.manufactureYear.toString(),
-        serialNumber: productData.serialNumber,
-        warrantyPeriod: productData.warrantyPeriod.toString(),
-        batteryHealth: productData.batteryHealth,
-        screenCondition: productData.screenCondition,
-        storageCapacity: productData.storageCapacity.toString(),
-        ramSize: productData.ramSize.toString(),
-        networkStatus: productData.networkStatus,
-        activationStatus: productData.activationStatus,
-        blacklistStatus: productData.blacklistStatus,
-        physicalCondition: productData.physicalCondition,
-        isRefurbished: productData.isRefurbished,
-        refurbishments: productData.refurbishments.map((refurb) => ({
-          timestamp: refurb.timestamp.toString(),
-          details: refurb.details,
-          replacedComponents: refurb.replacedComponents.join(", "),
-          technicianName: refurb.technicianName,
-          certificateHash: refurb.certificateHash,
-          warrantyExtension: refurb.warrantyExtension.toString(),
-          refurbishmentCost: refurb.refurbishmentCost.toString(),
-          newSerialNumber: refurb.newSerialNumber || "N/A",
-          softwareUpdateVersion: refurb.softwareUpdateVersion,
-          batteryReplaced: refurb.batteryReplaced ? "Yes" : "No",
-          screenReplaced: refurb.screenReplaced ? "Yes" : "No",
-          motherboardReplaced: refurb.motherboardReplaced ? "Yes" : "No",
-          refurbishmentGrade: refurb.refurbishmentGrade,
-          updatedPhysicalCondition: refurb.updatedPhysicalCondition,
-        })),
-      });
+      const productData = await response.json();
+      console.log("Fetched Product Data:", productData);
+
+      setProduct(productData);
     } catch (error) {
       console.error("Error fetching product:", error);
       setProduct(null);
@@ -101,13 +57,19 @@ const ProductDetails = ({ signer }) => {
             <strong>ID:</strong> {product.id}
           </p>
           <p>
-            <strong>Name:</strong> {product.name}
+            <strong>Brand:</strong> {product.brand}
           </p>
           <p>
-            <strong>Manufacturer:</strong> {product.manufacturer}
+            <strong>Model:</strong> {product.model}
           </p>
           <p>
-            <strong>Manufacture Year:</strong> {product.manufactureYear}
+            <strong>OS Version:</strong> {product.osVersion}
+          </p>
+          <p>
+            <strong>IMEI Number:</strong> {product.imeiNumber}
+          </p>
+          <p>
+            <strong>Manufacture Date:</strong> {product.manufactureDate}
           </p>
           <p>
             <strong>Serial Number:</strong> {product.serialNumber}
@@ -116,32 +78,49 @@ const ProductDetails = ({ signer }) => {
             <strong>Warranty Period:</strong> {product.warrantyPeriod} months
           </p>
           <p>
-            <strong>Battery Health:</strong> {product.batteryHealth}%
+            <strong>Condition:</strong> {product.condition}
           </p>
           <p>
-            <strong>Screen Condition:</strong> {product.screenCondition}
-          </p>
-          <p>
-            <strong>Storage:</strong> {product.storageCapacity} GB
-          </p>
-          <p>
-            <strong>RAM:</strong> {product.ramSize} GB
-          </p>
-          <p>
-            <strong>Network Status:</strong> {product.networkStatus}
-          </p>
-          <p>
-            <strong>Activation Status:</strong> {product.activationStatus}
-          </p>
-          <p>
-            <strong>Blacklist Status:</strong> {product.blacklistStatus}
-          </p>
-          <p>
-            <strong>Physical Condition:</strong> {product.physicalCondition}
+            <strong>Location:</strong> {product.locationOfRegistration}
           </p>
           <p>
             <strong>Refurbished:</strong> {product.isRefurbished ? "Yes" : "No"}
           </p>
+
+          <h3 className="text-lg font-semibold mt-4">Status</h3>
+          {product.status && (
+            <>
+              <p>
+                <strong>Battery Health:</strong> {product.status.batteryHealth}
+              </p>
+              <p>
+                <strong>Screen Condition:</strong>{" "}
+                {product.status.screenCondition}
+              </p>
+              <p>
+                <strong>Storage Capacity:</strong>{" "}
+                {product.status.storageCapacity}
+              </p>
+              <p>
+                <strong>RAM Size:</strong> {product.status.ramSize}
+              </p>
+              <p>
+                <strong>Network Status:</strong> {product.status.networkStatus}
+              </p>
+              <p>
+                <strong>Activation Status:</strong>{" "}
+                {product.status.activationStatus}
+              </p>
+              <p>
+                <strong>Blacklist Status:</strong>{" "}
+                {product.status.blacklistStatus ? "Yes" : "No"}
+              </p>
+              <p>
+                <strong>Physical Condition:</strong>{" "}
+                {product.status.physicalCondition}
+              </p>
+            </>
+          )}
 
           {product.refurbishments.length > 0 && (
             <div className="mt-4">
@@ -160,7 +139,7 @@ const ProductDetails = ({ signer }) => {
                   </p>
                   <p>
                     <strong>Replaced Components:</strong>{" "}
-                    {event.replacedComponents}
+                    {event.replacedComponents.join(", ")}
                   </p>
                   <p>
                     <strong>Technician:</strong> {event.technicianName}
@@ -184,22 +163,24 @@ const ProductDetails = ({ signer }) => {
                     {event.softwareUpdateVersion}
                   </p>
                   <p>
-                    <strong>Battery Replaced:</strong> {event.batteryReplaced}
+                    <strong>Battery Replaced:</strong>{" "}
+                    {event.batteryReplaced ? "Yes" : "No"}
                   </p>
                   <p>
-                    <strong>Screen Replaced:</strong> {event.screenReplaced}
+                    <strong>Screen Replaced:</strong>{" "}
+                    {event.screenReplaced ? "Yes" : "No"}
                   </p>
                   <p>
                     <strong>Motherboard Replaced:</strong>{" "}
-                    {event.motherboardReplaced}
+                    {event.motherboardReplaced ? "Yes" : "No"}
                   </p>
                   <p>
                     <strong>Refurbishment Grade:</strong>{" "}
                     {event.refurbishmentGrade}
                   </p>
                   <p>
-                    <strong>Updated Physical Condition:</strong>{" "}
-                    {event.updatedPhysicalCondition}
+                    <strong>Physical Condition:</strong>{" "}
+                    {event.physicalCondition}
                   </p>
                 </div>
               ))}

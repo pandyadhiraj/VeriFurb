@@ -169,9 +169,9 @@ app.post("/smartphones/refurbish", async (req, res) => {
         .json({ error: "replacedComponents must be an array" });
     }
 
-    // 🔥 Correctly passing struct
-    const tx = await contract.refurbishSmartphone(id, [
-      Math.floor(Date.now() / 1000), // Timestamp (current time)
+    // 🔥 Call refurbishSmartphone first
+    const tx1 = await contract.refurbishSmartphone(id, [
+      Math.floor(Date.now() / 1000), // Timestamp
       details,
       technicianName,
       certificateHash,
@@ -184,10 +184,13 @@ app.post("/smartphones/refurbish", async (req, res) => {
       motherboardReplaced,
       refurbishmentGrade,
       physicalCondition,
-      replacedComponents, // This is an array
+      replacedComponents,
     ]);
+    await tx1.wait();
 
-    await tx.wait();
+    // 🔥 THEN call markAsRefurbished
+    const tx2 = await contract.markAsRefurbished(id);
+    await tx2.wait();
 
     res.json({
       success: true,
