@@ -1,13 +1,19 @@
-# Sample Hardhat Project
+# Solidity contracts
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
+## To run
 
-Try running some of the following tasks:
+Make sure Ganache is running.
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.js
-```
+### Install dependencies
+
+npm i
+
+### Compile using Hardhat
+
+npx hardhat compile
+
+### Deploy the contract using Hardhat
+
+npx hardhat run scripts/deploy.js --network localhost
+
+### Update the contract address in .env of frontend and backend

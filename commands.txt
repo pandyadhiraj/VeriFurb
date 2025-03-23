@@ -1,5 +1,0 @@
-Hardhat Compile:
-npx hardhat compile
-
-Hardhat Deploy:
-npx hardhat run scripts/deploy.js --network localhost
