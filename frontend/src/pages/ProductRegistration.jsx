@@ -5,6 +5,26 @@ import contractABI from "../../../blockchain/artifacts/contracts/ProductLifecycl
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
 
+const placeholderMap = {
+  brand: "Brand Name",
+  model: "Model",
+  osVersion: "OS Version",
+  imeiNumber: "IMEI Number",
+  manufactureDate: "Manufacture Date",
+  serialNumber: "Serial Number",
+  warrantyPeriod: "Warranty Period",
+  condition: "Condition",
+  locationOfRegistration: "Location of Registration",
+  batteryHealth: "Battery Health",
+  screenCondition: "Screen Condition",
+  storageCapacity: "Storage Capacity",
+  ramSize: "RAM Size",
+  networkStatus: "Network Status",
+  activationStatus: "Activation Status",
+  blacklistStatus: "Check if Blacklisted",
+  physicalCondition: "Physical Condition",
+};
+
 const ProductRegistration = ({ signer }) => {
   const [formData, setFormData] = useState({
     brand: "",
@@ -88,7 +108,7 @@ const ProductRegistration = ({ signer }) => {
       await statusTx.wait();
 
       alert("Smartphone registered successfully with status!");
-      setQrValue(`http://yourwebsite.com/details/${smartphoneId}`);
+      setQrValue(`http://127.0.0.1:5173/details/${smartphoneId}`);
     } catch (error) {
       alert("Error registering smartphone: " + error.message);
     }
@@ -105,9 +125,7 @@ const ProductRegistration = ({ signer }) => {
           key={key}
           type="text"
           name={key}
-          placeholder={key
-            .replace(/([A-Z])/g, " $1")
-            .replace(/^./, (str) => str.toUpperCase())}
+          placeholder={placeholderMap[key] || key}
           value={formData[key]}
           onChange={handleChange}
           className="border border-gray-400 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all w-full"
@@ -119,34 +137,39 @@ const ProductRegistration = ({ signer }) => {
       </h2>
 
       {/* Smartphone Status Fields */}
-      {Object.keys(statusData).map((key) =>
-        key === "blacklistStatus" ? (
-          <div key={key} className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              name={key}
-              checked={statusData[key]}
-              onChange={handleStatusChange}
-              className="w-5 h-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
-            />
-            <label className="text-gray-700">
-              {key.replace(/([A-Z])/g, " $1")}
-            </label>
-          </div>
-        ) : (
+      {/* Smartphone Status Fields (Text Inputs First) */}
+      {Object.keys(statusData)
+        .filter((key) => key !== "blacklistStatus")
+        .map((key) => (
           <input
             key={key}
             type="text"
             name={key}
-            placeholder={key
-              .replace(/([A-Z])/g, " $1")
-              .replace(/^./, (str) => str.toUpperCase())}
+            placeholder={
+              placeholderMap[key] ||
+              key
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (str) => str.toUpperCase())
+            }
             value={statusData[key]}
             onChange={handleStatusChange}
             className="border border-gray-400 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all w-full"
           />
-        )
-      )}
+        ))}
+
+      {/* Move Blacklist Checkbox to the Last Position */}
+      <div key="blacklistStatus" className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          name="blacklistStatus"
+          checked={statusData.blacklistStatus}
+          onChange={handleStatusChange}
+          className="w-5 h-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+        />
+        <label className="text-gray-700">
+          {placeholderMap["blacklistStatus"]}
+        </label>
+      </div>
 
       <button
         onClick={registerSmartphone}
