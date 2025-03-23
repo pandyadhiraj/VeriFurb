@@ -72,10 +72,8 @@ const ProductRegistration = ({ signer }) => {
       );
       const receipt = await tx.wait();
 
-      // Get the newly registered smartphone ID from events
       const smartphoneId = receipt.logs[0].args.id.toString();
 
-      // Set smartphone status
       const statusTx = await contract.setSmartphoneStatus(smartphoneId, {
         batteryHealth: statusData.batteryHealth,
         screenCondition: statusData.screenCondition,

@@ -55,7 +55,6 @@ contract ProductLifecycle {
     event SmartphoneRefurbished(uint256 indexed id, string technicianName);
     event SmartphoneMarkedAsRefurbished(uint256 indexed id);
 
-    // ✅ Register smartphone core details
     function registerSmartphone(
         string memory _brand,
         string memory _model,
@@ -88,7 +87,6 @@ contract ProductLifecycle {
         emit SmartphoneRegistered(smartphoneCount, _imeiNumber);
     }
 
-    // ✅ Set smartphone status fields separately
     function setSmartphoneStatus(
         uint256 _id,
         SmartphoneStatus memory _status
@@ -100,7 +98,6 @@ contract ProductLifecycle {
         emit SmartphoneStatusUpdated(_id);
     }
 
-    // ✅ Store a refurbishment record and mark as refurbished
     function refurbishSmartphone(
         uint256 _id,
         Refurbishment memory _refurbishment
@@ -109,7 +106,6 @@ contract ProductLifecycle {
 
         refurbishments[_id].push(_refurbishment);
 
-        // 🔥 Auto-mark as refurbished
         Smartphone storage phone = smartphones[_id];
         phone.isRefurbished = true;
 
@@ -117,7 +113,6 @@ contract ProductLifecycle {
         emit SmartphoneMarkedAsRefurbished(_id);
     }
 
-    // ✅ Mark a smartphone as refurbished (manual)
     function markAsRefurbished(uint256 _id) public {
         require(_id > 0 && _id <= smartphoneCount, "Invalid smartphone ID");
 
@@ -127,13 +122,11 @@ contract ProductLifecycle {
         emit SmartphoneMarkedAsRefurbished(_id);
     }
 
-    // ✅ Get smartphone details
     function getSmartphone(uint256 _id) public view returns (Smartphone memory, SmartphoneStatus memory) {
         require(_id > 0 && _id <= smartphoneCount, "Smartphone not found");
         return (smartphones[_id], smartphoneStatus[_id]);
     }
 
-    // ✅ Get refurbishments separately
     function getRefurbishments(uint256 _id) public view returns (Refurbishment[] memory) {
         require(_id > 0 && _id <= smartphoneCount, "Smartphone not found");
         return refurbishments[_id];

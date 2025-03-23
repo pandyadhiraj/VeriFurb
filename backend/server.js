@@ -14,7 +14,6 @@ const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-// ✅ Register a new smartphone
 app.post("/smartphones", async (req, res) => {
   try {
     const {
@@ -49,7 +48,6 @@ app.post("/smartphones", async (req, res) => {
   }
 });
 
-// ✅ Get smartphone details
 app.get("/smartphones/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -107,7 +105,6 @@ app.get("/smartphones/:id", async (req, res) => {
   }
 });
 
-// ✅ Set smartphone status
 app.post("/smartphones/status", async (req, res) => {
   try {
     const {
@@ -144,7 +141,6 @@ app.post("/smartphones/status", async (req, res) => {
   }
 });
 
-// ✅ Refurbish a smartphone (Corrected struct passing)
 app.post("/smartphones/refurbish", async (req, res) => {
   try {
     const {
@@ -170,7 +166,6 @@ app.post("/smartphones/refurbish", async (req, res) => {
         .json({ error: "replacedComponents must be an array" });
     }
 
-    // ✅ Call refurbishSmartphone with structured object
     const tx = await contract.refurbishSmartphone(id, {
       timestamp: Math.floor(Date.now() / 1000),
       details,
@@ -199,7 +194,6 @@ app.post("/smartphones/refurbish", async (req, res) => {
   }
 });
 
-// ✅ Mark smartphone as refurbished (no need for this in most cases)
 app.post("/smartphones/mark-refurbished", async (req, res) => {
   try {
     const { id } = req.body;
@@ -216,4 +210,4 @@ app.post("/smartphones/mark-refurbished", async (req, res) => {
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

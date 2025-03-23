@@ -4,9 +4,9 @@ async function main() {
   const ProductLifecycle = await hre.ethers.getContractFactory(
     "ProductLifecycle"
   );
-  const productLifecycle = await ProductLifecycle.deploy(); // Deploy contract
+  const productLifecycle = await ProductLifecycle.deploy();
 
-  await productLifecycle.waitForDeployment(); // Wait for deployment
+  await productLifecycle.waitForDeployment();
 
   console.log(
     `ProductLifecycle deployed to: ${await productLifecycle.getAddress()}`
