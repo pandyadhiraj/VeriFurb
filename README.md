@@ -32,3 +32,9 @@
 
 - **User-Friendly Interface**
   - A **React + Vite frontend** with **TailwindCSS styling** for a seamless experience.
+
+## To Run
+
+### Follow individual READMEs in blockchain, backend and frontend.
+
+### Connect the Metamask extension to local Ganache

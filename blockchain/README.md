@@ -2,7 +2,7 @@
 
 ## To run
 
-Make sure Ganache is running.
+### Make sure Ganache is running.
 
 ### Install dependencies
 
