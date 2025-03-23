@@ -97,7 +97,7 @@ const ProductRefurbish = ({ signer }) => {
       <input
         type="text"
         name="replacedComponents"
-        placeholder="Replaced Components (comma-separated)"
+        placeholder="Replaced Components"
         value={formData.replacedComponents}
         onChange={handleChange}
         className="border border-gray-400 px-4 py-2 rounded-md w-full"
@@ -129,7 +129,7 @@ const ProductRefurbish = ({ signer }) => {
       <input
         type="number"
         name="refurbishmentCost"
-        placeholder="Refurbishment Cost ($)"
+        placeholder="Refurbishment Cost (₹)"
         value={formData.refurbishmentCost}
         onChange={handleChange}
         className="border border-gray-400 px-4 py-2 rounded-md w-full"
