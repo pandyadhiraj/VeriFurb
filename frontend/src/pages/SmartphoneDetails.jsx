@@ -1,95 +1,80 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-const ProductDetails = () => {
-  const [productId, setProductId] = useState("");
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(false);
+const SmartphoneDetails = () => {
+  const { id } = useParams();
+  const [smartphone, setSmartphone] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const fetchProduct = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `http://localhost:5000/smartphones/${productId}`
-      );
-      if (!response.ok) {
-        throw new Error("Product not found");
+  useEffect(() => {
+    const fetchSmartphone = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/smartphones/${id}`);
+        if (!response.ok) {
+          throw new Error("Smartphone not found");
+        }
+        const data = await response.json();
+        setSmartphone(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const productData = await response.json();
-      console.log("Fetched Product Data:", productData);
+    fetchSmartphone();
+  }, [id]);
 
-      setProduct(productData);
-    } catch (error) {
-      console.error("Error fetching product:", error);
-      setProduct(null);
-    }
-    setLoading(false);
-  };
+  if (loading)
+    return <div className="text-center mt-10 text-white">Loading...</div>;
+  if (error)
+    return <div className="text-center text-red-500 mt-10">Error: {error}</div>;
 
   return (
-    <div className="bg-gray-900 text-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto animate-fadeIn space-y-4">
-      <h2 className="text-2xl font-bold text-gray-100">
-        Check Product Details
+    <div className="bg-gray-900 text-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto animate-fadeIn space-y-4 mt-10">
+      <h2 className="text-2xl font-bold text-gray-100 text-center mb-6">
+        Smartphone Details
       </h2>
 
-      <input
-        type="text"
-        placeholder="Enter Product ID"
-        value={productId}
-        onChange={(e) => setProductId(e.target.value)}
-        className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all w-full"
-      />
-
-      <button
-        onClick={fetchProduct}
-        className={`bg-indigo-600 text-white px-6 py-2 rounded-md transition-all duration-300 hover:bg-indigo-800 focus:ring-2 focus:ring-indigo-500 w-full ${
-          loading ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-        disabled={loading}
-      >
-        {loading ? "Fetching..." : "Check"}
-      </button>
-
-      {/* Product Information and Refurbishment History Sections */}
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Product Information Section */}
         <div className="bg-gray-800 p-4 rounded-md shadow-sm space-y-4 w-full">
           <h3 className="text-lg font-semibold">Product Information</h3>
-          {product && (
+          {smartphone && (
             <>
               <p>
-                <strong>ID:</strong> {product.id}
+                <strong>Brand:</strong> {smartphone.brand}
               </p>
               <p>
-                <strong>Brand:</strong> {product.brand}
+                <strong>Model:</strong> {smartphone.model}
               </p>
               <p>
-                <strong>Model:</strong> {product.model}
+                <strong>OS Version:</strong> {smartphone.osVersion}
               </p>
               <p>
-                <strong>OS Version:</strong> {product.osVersion}
+                <strong>IMEI Number:</strong> {smartphone.imeiNumber}
               </p>
               <p>
-                <strong>IMEI Number:</strong> {product.imeiNumber}
+                <strong>Manufacture Date:</strong> {smartphone.manufactureDate}
               </p>
               <p>
-                <strong>Manufacture Date:</strong> {product.manufactureDate}
+                <strong>Serial Number:</strong> {smartphone.serialNumber}
               </p>
               <p>
-                <strong>Serial Number:</strong> {product.serialNumber}
-              </p>
-              <p>
-                <strong>Warranty Period:</strong> {product.warrantyPeriod}{" "}
+                <strong>Warranty Period:</strong> {smartphone.warrantyPeriod}{" "}
                 months
               </p>
               <p>
-                <strong>Condition:</strong> {product.condition}
+                <strong>Condition:</strong> {smartphone.condition}
               </p>
               <p>
-                <strong>Location:</strong> {product.locationOfRegistration}
+                <strong>Location of Registration:</strong>{" "}
+                {smartphone.locationOfRegistration}
               </p>
               <p>
                 <strong>Refurbished:</strong>{" "}
-                {product.isRefurbished ? "Yes" : "No"}
+                {smartphone.isRefurbished ? "Yes" : "No"}
               </p>
             </>
           )}
@@ -98,25 +83,30 @@ const ProductDetails = () => {
         {/* Refurbishment History Section */}
         <div className="bg-gray-800 p-4 rounded-md shadow-sm space-y-4 w-full">
           <h3 className="text-lg font-semibold">Refurbishment History</h3>
-          {product && product.refurbishments.length > 0 ? (
-            product.refurbishments.map((event, index) => (
+          {smartphone && smartphone.refurbishments.length > 0 ? (
+            smartphone.refurbishments.map((event, index) => (
               <div
                 key={index}
                 className="mt-2 p-2 border rounded bg-gray-700 shadow-sm"
               >
                 <p>
                   <strong>Date:</strong>{" "}
-                  {new Date(Number(event.timestamp) * 1000).toLocaleString()}
+                  {event.timestamp
+                    ? new Date(Number(event.timestamp) * 1000).toLocaleString()
+                    : "N/A"}
                 </p>
                 <p>
                   <strong>Details:</strong> {event.details}
                 </p>
                 <p>
                   <strong>Replaced Components:</strong>{" "}
-                  {event.replacedComponents.join(", ")}
+                  {event.replacedComponents &&
+                  event.replacedComponents.length > 0
+                    ? event.replacedComponents.join(", ")
+                    : "None"}
                 </p>
                 <p>
-                  <strong>Technician:</strong> {event.technicianName}
+                  <strong>Technician Name:</strong> {event.technicianName}
                 </p>
                 <p>
                   <strong>Certification Hash:</strong> {event.certificateHash}
@@ -162,15 +152,8 @@ const ProductDetails = () => {
           )}
         </div>
       </div>
-
-      {/* Error Message */}
-      {!loading && product === null && (
-        <p className="text-red-500 text-lg mt-4">
-          ⚠ Product not found. Please check the ID.
-        </p>
-      )}
     </div>
   );
 };
 
-export default ProductDetails;
+export default SmartphoneDetails;
