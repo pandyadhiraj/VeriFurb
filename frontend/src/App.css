@@ -1,6 +1,10 @@
-/* Remove the #root selector if not needed */
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
 
-/* Logo Styling */
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -29,12 +33,10 @@
   }
 }
 
-/* Card Styling (now handled by Tailwind in index.css) - Optional override */
 .card {
   padding: 2em;
 }
 
-/* Remove read-the-docs if not used */
 .read-the-docs {
   color: #888;
 }

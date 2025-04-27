@@ -23,7 +23,6 @@ const ProductRefurbish = ({ signer }) => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -35,13 +34,11 @@ const ProductRefurbish = ({ signer }) => {
 
   const refurbishProduct = async () => {
     if (!signer) {
-      setSuccessMessage("Connect MetaMask first!");
+      alert("Connect MetaMask first!");
       return;
     }
 
     setLoading(true);
-    setSuccessMessage(""); // Reset success message before the process starts
-
     try {
       const contract = new ethers.Contract(
         CONTRACT_ADDRESS,
@@ -70,19 +67,16 @@ const ProductRefurbish = ({ signer }) => {
         }
       );
       await tx.wait();
-
-      setSuccessMessage(
-        `Product ${formData.productId} refurbished successfully!`
-      );
+      alert(`Product ${formData.productId} refurbished successfully!`);
     } catch (error) {
-      setSuccessMessage("Error refurbishing product: " + error.message);
+      alert("Error refurbishing product: " + error.message);
     }
     setLoading(false);
   };
 
   return (
-    <div className="bg-gray-900 text-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto animate-fadeIn space-y-4">
-      <h2 className="text-2xl font-bold text-gray-100">Refurbish Product</h2>
+    <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto animate-fadeIn space-y-4">
+      <h2 className="text-2xl font-bold text-gray-800">Refurbish Product</h2>
 
       <input
         type="text"
@@ -90,7 +84,7 @@ const ProductRefurbish = ({ signer }) => {
         placeholder="Product ID"
         value={formData.productId}
         onChange={handleChange}
-        className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-md w-full"
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
       />
       <input
         type="text"
@@ -98,15 +92,15 @@ const ProductRefurbish = ({ signer }) => {
         placeholder="Details"
         value={formData.details}
         onChange={handleChange}
-        className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-md w-full"
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
       />
       <input
         type="text"
         name="replacedComponents"
-        placeholder="Replaced Components"
+        placeholder="Replaced Components (comma-separated)"
         value={formData.replacedComponents}
         onChange={handleChange}
-        className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-md w-full"
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
       />
       <input
         type="text"
@@ -114,7 +108,7 @@ const ProductRefurbish = ({ signer }) => {
         placeholder="Technician Name"
         value={formData.technicianName}
         onChange={handleChange}
-        className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-md w-full"
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
       />
       <input
         type="text"
@@ -122,7 +116,7 @@ const ProductRefurbish = ({ signer }) => {
         placeholder="Certificate Hash"
         value={formData.certificateHash}
         onChange={handleChange}
-        className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-md w-full"
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
       />
       <input
         type="number"
@@ -130,15 +124,15 @@ const ProductRefurbish = ({ signer }) => {
         placeholder="Warranty Extension (months)"
         value={formData.warrantyExtension}
         onChange={handleChange}
-        className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-md w-full"
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
       />
       <input
         type="number"
         name="refurbishmentCost"
-        placeholder="Refurbishment Cost (₹)"
+        placeholder="Refurbishment Cost ($)"
         value={formData.refurbishmentCost}
         onChange={handleChange}
-        className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-md w-full"
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
       />
       <input
         type="text"
@@ -146,7 +140,7 @@ const ProductRefurbish = ({ signer }) => {
         placeholder="New Serial Number"
         value={formData.newSerialNumber}
         onChange={handleChange}
-        className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-md w-full"
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
       />
       <input
         type="text"
@@ -154,7 +148,7 @@ const ProductRefurbish = ({ signer }) => {
         placeholder="Software Update Version"
         value={formData.softwareUpdateVersion}
         onChange={handleChange}
-        className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-md w-full"
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
       />
       <input
         type="text"
@@ -162,7 +156,7 @@ const ProductRefurbish = ({ signer }) => {
         placeholder="Refurbishment Grade"
         value={formData.refurbishmentGrade}
         onChange={handleChange}
-        className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-md w-full"
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
       />
       <input
         type="text"
@@ -170,10 +164,10 @@ const ProductRefurbish = ({ signer }) => {
         placeholder="Physical Condition"
         value={formData.physicalCondition}
         onChange={handleChange}
-        className="bg-gray-800 border border-gray-600 text-white px-4 py-2 rounded-md w-full"
+        className="border border-gray-400 px-4 py-2 rounded-md w-full"
       />
 
-      <div className="flex items-center space-x-4 text-white">
+      <div className="flex items-center space-x-4">
         <label className="flex items-center">
           <input
             type="checkbox"
@@ -215,15 +209,6 @@ const ProductRefurbish = ({ signer }) => {
       >
         {loading ? "Processing..." : "Refurbish"}
       </button>
-
-      {/* Success Message */}
-      {successMessage && (
-        <div className="mt-4 text-center">
-          <div className="inline-block bg-green-30 bg-opacity-100 text-green-400 text-lg font-semibold rounded-lg px-6 py-3 shadow-lg border border-green-600">
-            {successMessage}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

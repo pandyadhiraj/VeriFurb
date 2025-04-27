@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 
-const WalletConnect = ({ setWalletAddress, setSigner, onWalletConnected }) => {
+const WalletConnect = ({ setWalletAddress, setSigner }) => {
   const [connected, setConnected] = useState(false);
 
   const connectWallet = async () => {
@@ -16,9 +16,6 @@ const WalletConnect = ({ setWalletAddress, setSigner, onWalletConnected }) => {
       setWalletAddress(address);
       setSigner(signer);
       setConnected(true);
-
-      // Trigger the success message
-      onWalletConnected(address); // Passing the wallet address to trigger the success message
     } catch (error) {
       console.error("Wallet connection failed:", error);
     }
